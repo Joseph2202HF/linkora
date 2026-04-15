@@ -49,4 +49,4 @@ Modifiez `utils/config.py` pour changer l'hôte, le port ou la taille du buffer.
 Les contributions sont les bienvenues ! Ouvrez une issue ou une pull request.
 
 ## Licence
-Ce projet est sous licence MIT.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
