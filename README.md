@@ -17,7 +17,7 @@ Un projet open source simple pour le transfert de fichiers en Python via sockets
    ```bash
    pip install -r requirements.txt
    ```
-3. (Optionnel) Installez le package :
+3. Installez le package :
    ```bash
    pip install .
    ```

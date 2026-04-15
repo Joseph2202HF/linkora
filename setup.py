@@ -6,11 +6,7 @@ setup(
     description="Outil simple de transfert de fichiers via sockets",
     author="Votre Nom",
     packages=find_packages(),
-    entry_points={
-        'console_scripts': [
-            'linkora=main:main',
-        ],
-    },
+    scripts=['bin/linkora'],
     install_requires=[],
     python_requires='>=3.6',
 )
