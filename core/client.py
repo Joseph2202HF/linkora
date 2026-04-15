@@ -1,26 +1,27 @@
 import socket
-import sys
-from utils.config import HOST, PORT
+from utils.config import CLIENT_HOST, PORT
 
-try:
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((HOST, PORT))
 
-    if len(sys.argv) > 2 and sys.argv[1] == "--client":
-        filename = sys.argv[2]
-    else:
-        filename = input("Entrez le nom du fichier à envoyer : ")
+def run_client(filename=None, host=None):
+    host = host or CLIENT_HOST
+    try:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((host, PORT))
 
-    file = open(filename, "rb")
-    data = file.read(1024)
+        if not filename:
+            filename = input("Entrez le nom du fichier à envoyer : ")
 
-    while data:
-        client.send(data)
-        data = file.read(1024)
+        with open(filename, "rb") as file:
+            data = file.read(1024)
+            while data:
+                client.send(data)
+                data = file.read(1024)
 
-    file.close()
-    client.close()
+        client.close()
+        print("Fichier envoyé ✔️")
+    except Exception as e:
+        print(f"Erreur : {e}")
 
-    print("Fichier envoyé ✔️")
-except Exception as e:
-    print(f"Erreur : {e}")
+
+if __name__ == "__main__":
+    run_client()

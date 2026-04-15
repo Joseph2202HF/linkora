@@ -61,7 +61,11 @@ linkora --server
 # Affiche : Serveur en attente...
 ```
 
-Le serveur écoute sur `127.0.0.1:5000` (configurable dans `utils/config.py`).
+Par défaut, le serveur écoute sur toutes les interfaces réseau (`0.0.0.0:5000`).
+Pour lier une adresse spécifique, utilisez :
+```bash
+linkora --server --host 192.168.1.10
+```
 
 ### Envoyer un fichier (client)
 
@@ -71,13 +75,18 @@ linkora --client mon_fichier.txt
 # Affiche : Fichier envoyé ✔️
 ```
 
+Si le serveur est sur une machine distante, indiquez son IP :
+```bash
+linkora --client mon_fichier.txt --host 192.168.1.10
+```
+
 ### Exemples complets
 
 **Terminal 1 (serveur)**
 ```bash
-$ linkora --server
-Serveur en attente...
-Connecté : ('127.0.0.1', 54321)
+$ linkora --server --host 0.0.0.0
+Serveur en attente sur 0.0.0.0:5000...
+Connecté : ('192.168.1.20', 54321)
 Entrez le nom du fichier de destination : reçu.txt
 Fichier reçu ✔️
 ```
