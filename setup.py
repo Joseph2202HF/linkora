@@ -4,7 +4,7 @@ setup(
     name="linkora",
     version="1.0.0",
     description="Outil simple de transfert de fichiers via sockets",
-    author="Votre Nom",
+    author="Jean Joseph",
     packages=find_packages(),
     scripts=['bin/linkora'],
     install_requires=[],
