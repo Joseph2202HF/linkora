@@ -1,4 +1,5 @@
 import socket
+import struct
 from utils.config import SERVER_HOST, PORT
 
 
@@ -26,12 +27,20 @@ def run_server(host=None):
         conn, addr = server.accept()
         print("Connecté :", addr)
 
+        size_data = conn.recv(8)
+        size = struct.unpack('!Q', size_data)[0]
+        print(f"Taille du fichier attendue : {size} octets")
+
         filename = input("Entrez le nom du fichier de destination : ")
         with open(filename, "wb") as file:
-            data = conn.recv(1024)
-            while data:
+            received = 0
+            while received < size:
+                data = conn.recv(2048)
+                if not data:
+                    break
                 file.write(data)
-                data = conn.recv(1024)
+                received += len(data)
+                print(f"Progress: {received / size * 100:.2f}%")
 
         conn.close()
         server.close()

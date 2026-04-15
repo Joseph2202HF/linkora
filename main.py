@@ -9,7 +9,7 @@ def main():
     parser.add_argument("--help", action="help", help="Afficher cette aide")
     parser.add_argument("--server", action="store_true", help="Lancer le serveur")
     parser.add_argument("--client", type=str, help="Lancer le client avec le fichier spécifié")
-    parser.add_argument("-h", "--host", type=str, help="Adresse IP du serveur à utiliser pour le client")
+    parser.add_argument("-H", "--host", type=str, help="Adresse IP du serveur à utiliser pour le client")
 
     args = parser.parse_args()
 

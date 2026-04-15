@@ -35,7 +35,8 @@ Un projet open source simple pour le transfert de fichiers en Python via sockets
 
 2. Lancez le script d'installation :
    ```bash
-   bash install.sh
+   chmod +x install.sh
+   ./install.sh
    ```
 
 3. Suivez les options :

@@ -1,4 +1,6 @@
 import socket
+import struct
+import os
 from utils.config import CLIENT_HOST, PORT
 
 
@@ -11,11 +13,17 @@ def run_client(filename=None, host=None):
         if not filename:
             filename = input("Entrez le nom du fichier à envoyer : ")
 
+        size = os.path.getsize(filename)
+        client.send(struct.pack('!Q', size))
+
         with open(filename, "rb") as file:
-            data = file.read(1024)
+            sent = 0
+            data = file.read(2048)
             while data:
                 client.send(data)
-                data = file.read(1024)
+                sent += len(data)
+                print(f"Progress: {sent / size * 100:.2f}%")
+                data = file.read(2048)
 
         client.close()
         print("Fichier envoyé ✔️")
