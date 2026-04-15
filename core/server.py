@@ -14,6 +14,16 @@ def get_local_ip():
         sock.close()
 
 
+def recv_exact(sock, count):
+    data = b""
+    while len(data) < count:
+        chunk = sock.recv(count - len(data))
+        if not chunk:
+            raise ConnectionError("Connexion interrompue pendant la réception")
+        data += chunk
+    return data
+
+
 def run_server(host=None):
     host = host or SERVER_HOST
     local_ip = get_local_ip() if host == "0.0.0.0" else host
@@ -27,11 +37,15 @@ def run_server(host=None):
         conn, addr = server.accept()
         print("Connecté :", addr)
 
-        size_data = conn.recv(8)
+        name_len_data = recv_exact(conn, 2)
+        name_len = struct.unpack('!H', name_len_data)[0]
+        filename = recv_exact(conn, name_len).decode('utf-8')
+        print(f"Nom du fichier reçu : {filename}")
+
+        size_data = recv_exact(conn, 8)
         size = struct.unpack('!Q', size_data)[0]
         print(f"Taille du fichier attendue : {size} octets")
 
-        filename = input("Entrez le nom du fichier de destination : ")
         with open(filename, "wb") as file:
             received = 0
             while received < size:

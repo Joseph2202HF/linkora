@@ -13,14 +13,18 @@ def run_client(filename=None, host=None):
         if not filename:
             filename = input("Entrez le nom du fichier à envoyer : ")
 
+        file_name_bytes = os.path.basename(filename).encode('utf-8')
+        client.sendall(struct.pack('!H', len(file_name_bytes)))
+        client.sendall(file_name_bytes)
+
         size = os.path.getsize(filename)
-        client.send(struct.pack('!Q', size))
+        client.sendall(struct.pack('!Q', size))
 
         with open(filename, "rb") as file:
             sent = 0
             data = file.read(2048)
             while data:
-                client.send(data)
+                client.sendall(data)
                 sent += len(data)
                 print(f"Progress: {sent / size * 100:.2f}%")
                 data = file.read(2048)
