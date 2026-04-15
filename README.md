@@ -13,17 +13,16 @@ Un projet open source simple pour le transfert de fichiers en Python via sockets
    git clone https://github.com/Joseph2202HF/linkora.git
    cd linkora
    ```
-2. Installez les dépendances :
+2. Lancez le script d'installation Bash :
    ```bash
-   pip install -r requirements.txt
+   bash install.sh
    ```
-3. Installez le package :
-   ```bash
-   pip install .
-   ```
-   Puis utilisez `linkora --server` ou `linkora --client fichier`.
+3. Suivez les options :
+   - Copier `linkora` dans `/usr/local/bin`
+   - Ajouter `bin/` à votre PATH
+   - Ne rien faire
 
-Assurez-vous d'avoir Python 3.6+ installé.
+Une fois installé, utilisez `linkora --server` ou `linkora --client fichier`.
 
 ## Usage
 Lancez le serveur :
