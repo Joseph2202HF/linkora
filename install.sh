@@ -3,9 +3,10 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LINKORA_BIN="$SCRIPT_DIR/bin/linkora"
+LINKORA_MAIN="$SCRIPT_DIR/main.py"
 
-if [ ! -f "$LINKORA_BIN" ]; then
-  echo "Erreur : le script $LINKORA_BIN est introuvable."
+if [ ! -f "$LINKORA_MAIN" ]; then
+  echo "Erreur : le fichier main.py est introuvable."
   exit 1
 fi
 
@@ -17,8 +18,16 @@ read -rp "Choix [1/2/3] : " choice
 
 case "$choice" in
   1)
-    sudo cp "$LINKORA_BIN" /usr/local/bin/linkora
-    sudo chmod +x /usr/local/bin/linkora
+    # Créer un wrapper qui mémorise le chemin du répertoire linkora
+    WRAPPER_SCRIPT=$(mktemp)
+    cat > "$WRAPPER_SCRIPT" << 'EOF'
+#!/bin/bash
+LINKORA_DIR="LINKORA_DIR_PLACEHOLDER"
+python3 "$LINKORA_DIR/main.py" "$@"
+EOF
+    sed -i "s|LINKORA_DIR_PLACEHOLDER|$SCRIPT_DIR|g" "$WRAPPER_SCRIPT"
+    chmod +x "$WRAPPER_SCRIPT"
+    sudo mv "$WRAPPER_SCRIPT" /usr/local/bin/linkora
     echo "Linkora installé dans /usr/local/bin/linkora"
     echo "Vous pouvez maintenant exécuter : linkora --server"
     ;;
@@ -32,7 +41,7 @@ case "$choice" in
       RC_FILE="$HOME/.profile"
     fi
 
-    EXPORT_LINE="export PATH=\"$SCRIPT_DIR/bin:\\$PATH\""
+    EXPORT_LINE="export PATH=\"$SCRIPT_DIR/bin:\$PATH\""
     if grep -Fxq "$EXPORT_LINE" "$RC_FILE" 2>/dev/null; then
       echo "Le PATH est déjà configuré dans $RC_FILE"
     else
