@@ -61,11 +61,8 @@ linkora --server
 # Affiche : Serveur en attente...
 ```
 
-Par défaut, le serveur écoute sur toutes les interfaces réseau (`0.0.0.0:5000`).
-Pour lier une adresse spécifique, utilisez :
-```bash
-linkora --server --host 192.168.1.10
-```
+Le serveur écoute sur toutes les interfaces réseau (`0.0.0.0:5000`) et détecte automatiquement l'adresse IP locale de l'appareil.
+Il affiche cette IP au démarrage pour que les clients distants puissent s'y connecter.
 
 ### Envoyer un fichier (client)
 
@@ -80,12 +77,14 @@ Si le serveur est sur une machine distante, indiquez son IP :
 linkora --client mon_fichier.txt --host 192.168.1.10
 ```
 
+La commande `-h` est réservée au client pour préciser l'adresse du serveur ; l'aide reste disponible via `--help`.
+
 ### Exemples complets
 
 **Terminal 1 (serveur)**
 ```bash
-$ linkora --server --host 0.0.0.0
-Serveur en attente sur 0.0.0.0:5000...
+$ linkora --server
+Serveur en attente sur 192.168.1.20:5000...
 Connecté : ('192.168.1.20', 54321)
 Entrez le nom du fichier de destination : reçu.txt
 Fichier reçu ✔️
@@ -93,7 +92,7 @@ Fichier reçu ✔️
 
 **Terminal 2 (client)**
 ```bash
-$ linkora --client document.pdf
+$ linkora --client document.pdf --host 192.168.1.20
 Fichier envoyé ✔️
 ```
 
@@ -102,9 +101,10 @@ Fichier envoyé ✔️
 Modifiez `utils/config.py` pour changer les paramètres :
 
 ```python
-HOST = "127.0.0.1"      # Adresse IP (localhost par défaut)
-PORT = 5000             # Port TCP
-BUFFER_SIZE = 1024      # Taille des chunks (en bytes)
+SERVER_HOST = "0.0.0.0"  # Écoute toutes les interfaces réseau
+CLIENT_HOST = "127.0.0.1"  # Valeur par défaut pour le client local
+PORT = 5000                 # Port TCP
+BUFFER_SIZE = 1024          # Taille des chunks (en bytes)
 ```
 
 Pour permettre les connexions distantes :
@@ -172,7 +172,7 @@ Ce projet est sous licence MIT. Voir [LICENSE](LICENSE) pour plus de détails.
 
 ## 👨‍💻 Auteurs
 
-- [Joseph2202HF](https://github.com/Joseph2202HF)
+- [Joseph ](https://github.com/Joseph2202HF)
 
 ## 🙏 Remerciements
 
