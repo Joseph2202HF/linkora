@@ -15,7 +15,10 @@ Un projet open source simple pour le transfert de fichiers en Python via sockets
    ```
 2. Lancez le script d'installation Bash :
    ```bash
-   bash install.sh
+    chmod +x install.sh
+   ```
+   ```bash
+    ./install.sh
    ```
 3. Suivez les options :
    - Copier `linkora` dans `/usr/local/bin`
