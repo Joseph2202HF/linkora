@@ -1,11 +1,15 @@
 import socket
+import sys
 from utils.config import HOST, PORT
 
 try:
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
 
-    filename = input("Entrez le nom du fichier à envoyer : ")
+    if len(sys.argv) > 2 and sys.argv[1] == "--client":
+        filename = sys.argv[2]
+    else:
+        filename = input("Entrez le nom du fichier à envoyer : ")
 
     file = open(filename, "rb")
     data = file.read(1024)

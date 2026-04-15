@@ -16,16 +16,21 @@ Un projet open source simple pour le transfert de fichiers en Python via sockets
 2. Assurez-vous d'avoir Python 3.x installé.
 
 ## Usage
-1. Lancez le serveur :
-   ```bash
-   python main.py
-   # Choisissez 1 pour serveur
-   ```
-2. Dans un autre terminal, lancez le client :
-   ```bash
-   python main.py
-   # Choisissez 2 pour client, puis entrez le nom du fichier
-   ```
+Lancez le serveur :
+```bash
+python main.py --server
+```
+
+Lancez le client :
+```bash
+python main.py --client nom_du_fichier
+```
+
+Ou utilisez l'ancien mode interactif (obsolète) :
+```bash
+python main.py
+# Puis choisissez 1 ou 2
+```
 
 ## Configuration
 Modifiez `utils/config.py` pour changer l'hôte, le port ou la taille du buffer.
