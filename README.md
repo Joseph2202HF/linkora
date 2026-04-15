@@ -172,7 +172,7 @@ Ce projet est sous licence MIT. Voir [LICENSE](LICENSE) pour plus de détails.
 
 ## 👨‍💻 Auteurs
 
-- [Joseph ](https://github.com/Joseph2202HF)
+- [Jean Joseph](https://github.com/Joseph2202HF)
 
 ## 🙏 Remerciements
 
