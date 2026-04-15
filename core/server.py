@@ -1,23 +1,28 @@
 import socket
 from utils.config import HOST, PORT
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((HOST, PORT))
-server.listen(1)
+try:
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((HOST, PORT))
+    server.listen(1)
 
-print("Serveur en attente...")
+    print("Serveur en attente...")
 
-conn, addr = server.accept()
-print("Connecté :", addr)
+    conn, addr = server.accept()
+    print("Connecté :", addr)
 
-file = open("received_file", "wb")
+    filename = input("Entrez le nom du fichier de destination : ")
+    file = open(filename, "wb")
 
-data = conn.recv(1024)
-while data:
-    file.write(data)
     data = conn.recv(1024)
+    while data:
+        file.write(data)
+        data = conn.recv(1024)
 
-file.close()
-conn.close()
+    file.close()
+    conn.close()
+    server.close()
 
-print("Fichier reçu ✔️")
+    print("Fichier reçu ✔️")
+except Exception as e:
+    print(f"Erreur : {e}")
