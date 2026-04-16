@@ -29,7 +29,7 @@ EOF
     chmod +x "$WRAPPER_SCRIPT"
     sudo mv "$WRAPPER_SCRIPT" /usr/local/bin/linkora
     echo "Linkora installé dans /usr/local/bin/linkora"
-    echo "Vous pouvez maintenant exécuter : linkora --server"
+    echo "Vous pouvez maintenant exécuter : linkora --help"
     ;;
   2)
     SHELL_NAME="$(basename "$SHELL")"
@@ -49,11 +49,11 @@ EOF
       echo "Ajout de $SCRIPT_DIR/bin à PATH dans $RC_FILE"
       echo "Recommencez le terminal ou exécutez : source $RC_FILE"
     fi
-    echo "Vous pouvez maintenant exécuter : linkora --server"
+    echo "Vous pouvez maintenant exécuter : linkora --help"
     ;;
   3)
     echo "Aucune modification effectuée."
-    echo "Exécutez directement : $LINKORA_BIN --server"
+    echo "Exécutez directement : $LINKORA_BIN --help"
     ;;
   *)
     echo "Choix invalide. Aucune action effectuée."

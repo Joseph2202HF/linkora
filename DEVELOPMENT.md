@@ -63,7 +63,7 @@ python main.py --client file.txt # Lance client
 Paramètres globaux:
 ```python
 HOST = "127.0.0.1"      # Adresse IP
-PORT = 5000             # Port TCP
+PORT = 2026           # Port TCP
 BUFFER_SIZE = 1024      # Taille chunks (bytes)
 ```
 

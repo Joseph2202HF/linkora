@@ -1,7 +1,7 @@
 import socket
 import struct
 import os
-from utils.config import CLIENT_HOST, PORT
+from utils.config import CLIENT_HOST, PORT,BUFFER_SIZE
 
 
 def run_client(filename=None, host=None):
@@ -22,12 +22,12 @@ def run_client(filename=None, host=None):
 
         with open(filename, "rb") as file:
             sent = 0
-            data = file.read(2048)
+            data = file.read(BUFFER_SIZE)
             while data:
                 client.sendall(data)
                 sent += len(data)
                 print(f"Progress: {sent / size * 100:.2f}%")
-                data = file.read(2048)
+                data = file.read(BUFFER_SIZE)
 
         client.close()
         print("Fichier envoyé ✔️")
