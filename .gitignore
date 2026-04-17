@@ -24,4 +24,6 @@ coverage.xml
 dist/
 build/
 *.so
-received_file
+received_filetest
+*.test
+test_*
