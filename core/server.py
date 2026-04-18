@@ -84,7 +84,7 @@ class FileReceiver:
         buffer_size = BUFFER_SIZE
         
         print(f"\n{Colors.CYAN}╭─────────────────────────────────────────────────────────╮{Colors.ENDC}")
-        print(f"{Colors.CYAN}│{Colors.ENDC} {Colors.BOLD}RÉCEPTION DU FICHIER{Colors.ENDC}".ljust(68) + f"{Colors.CYAN}│{Colors.ENDC}")
+        print(f"{Colors.CYAN}│{Colors.ENDC} {Colors.BOLD}TRANSFERT ENTRANT{Colors.ENDC}".ljust(68) + f"{Colors.CYAN}│{Colors.ENDC}")
         print(f"{Colors.CYAN}├─────────────────────────────────────────────────────────┤{Colors.ENDC}")
         
         with open(filename, 'wb', buffering=buffer_size) as f:
@@ -151,7 +151,7 @@ class FileReceiver:
         total_mb = total / 1024 / 1024
         
         # Ligne de progression moderne
-        progress_line = f"\r{Colors.CYAN}│{Colors.ENDC} 📥 [{bar}] {percent:5.1f}% | {Colors.GREEN}{speed:6.2f} Mo/s{Colors.ENDC} | {current_mb:7.1f}/{total_mb:7.1f} Mo | ⏱️ {remaining_str:10s}"
+        progress_line = f"\r{Colors.CYAN}│{Colors.ENDC} > [{bar}] {percent:5.1f}% | {Colors.GREEN}{speed:6.2f} Mo/s{Colors.ENDC} | {current_mb:7.1f}/{total_mb:7.1f} Mo | ETA {remaining_str:10s}"
         
         # Efface le reste de la ligne et affiche
         sys.stdout.write('\033[K' + progress_line)
@@ -162,9 +162,9 @@ class FileReceiver:
         elapsed = time.time() - self.start_time
         avg_speed = total_size / elapsed / 1024 / 1024 if elapsed > 0 else 0
         
-        print(f"\n{Colors.GREEN}✅ Transfert terminé en {elapsed:.2f}s{Colors.ENDC}")
-        print(f"{Colors.CYAN}📊 Vitesse moyenne: {avg_speed:.2f} Mo/s{Colors.ENDC}")
-        print(f"{Colors.CYAN}💾 Taille totale: {total_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
+        print(f"\n{Colors.GREEN}Transfert terminé en {elapsed:.2f}s{Colors.ENDC}")
+        print(f"{Colors.CYAN}Vitesse moyenne : {avg_speed:.2f} Mo/s{Colors.ENDC}")
+        print(f"{Colors.CYAN}Taille totale : {total_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
 
 def get_local_ip():
     """Obtient l'adresse IP locale de manière fiable"""
@@ -188,12 +188,12 @@ def discovery_responder(host, port, discovery_port):
         try:
             sock.bind(("", discovery_port))
         except OSError:
-            print(f"{Colors.YELLOW}⚠️  Port de découverte {discovery_port} déjà utilisé{Colors.ENDC}")
+            print(f"{Colors.YELLOW}[!] Port de découverte {discovery_port} déjà utilisé{Colors.ENDC}")
             return
             
         response = f"LINKORA:{host}:{port}:v{PROTOCOL_VERSION}".encode('utf-8')
         
-        print(f"{Colors.GREEN}🔍 Service de découverte actif sur UDP:{discovery_port}{Colors.ENDC}")
+        print(f"{Colors.GREEN}[*] Service de découverte actif sur UDP:{discovery_port}{Colors.ENDC}")
         
         while True:
             try:
@@ -212,25 +212,25 @@ def handle_client(conn, addr):
         receiver = FileReceiver(conn, addr)
         
         filename, file_size = receiver.receive_metadata()
-        print(f"{Colors.BOLD}📄 Réception de: {filename}{Colors.ENDC}")
-        print(f"{Colors.BOLD}📏 Taille attendue: {file_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
+        print(f"{Colors.BOLD}Fichier : {filename}{Colors.ENDC}")
+        print(f"{Colors.BOLD}Taille  : {file_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
         
         success = receiver.receive_file(filename, file_size)
         
         if success:
             receiver.get_stats(file_size)
-            print(f"{Colors.GREEN}✅ Fichier '{filename}' reçu avec succès{Colors.ENDC}")
+            print(f"{Colors.GREEN}[✓] Réception réussie de '{filename}'{Colors.ENDC}")
         else:
-            print(f"{Colors.YELLOW}⚠️  Transfert incomplet pour '{filename}'{Colors.ENDC}")
+            print(f"{Colors.YELLOW}[!] Transfert incomplet pour '{filename}'{Colors.ENDC}")
             
     except struct.error as e:
-        print(f"{Colors.RED}❌ Erreur de protocole avec {addr}: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Erreur de protocole avec {addr}: {e}{Colors.ENDC}")
     except UnicodeDecodeError as e:
-        print(f"{Colors.RED}❌ Erreur d'encodage avec {addr}: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Erreur d'encodage avec {addr}: {e}{Colors.ENDC}")
     except ConnectionError as e:
-        print(f"{Colors.RED}❌ Connexion perdue avec {addr}: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Connexion perdue avec {addr}: {e}{Colors.ENDC}")
     except Exception as e:
-        print(f"{Colors.RED}❌ Erreur avec le client {addr}: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Erreur avec le client {addr}: {e}{Colors.ENDC}")
     finally:
         conn.close()
         print(f"{Colors.CYAN}{'─'*58}{Colors.ENDC}")
@@ -258,17 +258,17 @@ def run_server(host=None, port=None):
         server.listen(5)
         
         print(f"\n{Colors.BOLD}{Colors.GREEN}╔══════════════════════════════════════════════════════════╗{Colors.ENDC}")
-        print(f"{Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}           🚀 SERVEUR LINKORA DÉMARRÉ                       {Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}")
+        print(f"{Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}                  SERVEUR LINKORA ACTIF                     {Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}")
         print(f"{Colors.BOLD}{Colors.GREEN}╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
-        print(f"{Colors.CYAN}🌐 Adresse: {local_ip}:{port}{Colors.ENDC}")
-        print(f"{Colors.CYAN}📦 Buffer: {BUFFER_SIZE / 1024 / 1024:.0f} Mo{Colors.ENDC}")
-        print(f"{Colors.CYAN}⏳ En attente de connexion...{Colors.ENDC}")
+        print(f"{Colors.CYAN}Adresse    : {local_ip}:{port}{Colors.ENDC}")
+        print(f"{Colors.CYAN}Buffer     : {BUFFER_SIZE / 1024 / 1024:.0f} Mo{Colors.ENDC}")
+        print(f"{Colors.CYAN}En attente de connexion...{Colors.ENDC}")
         print(f"{Colors.CYAN}{'─'*58}{Colors.ENDC}")
         
         while True:
             try:
                 conn, addr = server.accept()
-                print(f"\n{Colors.GREEN}🔗 Client connecté: {addr[0]}:{addr[1]}{Colors.ENDC}")
+                print(f"\n{Colors.GREEN}[+] Client connecté : {addr[0]}:{addr[1]}{Colors.ENDC}")
                 
                 client_thread = threading.Thread(
                     target=handle_client,
@@ -278,24 +278,24 @@ def run_server(host=None, port=None):
                 client_thread.start()
                 
             except KeyboardInterrupt:
-                print(f"\n{Colors.YELLOW}🛑 Arrêt du serveur...{Colors.ENDC}")
+                print(f"\n{Colors.YELLOW}[*] Arrêt du serveur demandé...{Colors.ENDC}")
                 break
             except Exception as e:
-                print(f"{Colors.RED}❌ Erreur d'acceptation: {e}{Colors.ENDC}")
+                print(f"{Colors.RED}[✗] Erreur d'acceptation : {e}{Colors.ENDC}")
                 
     except PermissionError:
-        print(f"{Colors.RED}❌ Permission refusée pour le port {port}{Colors.ENDC}")
-        print(f"{Colors.YELLOW}💡 Essayez un port > 1024 ou exécutez avec les droits administrateur{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Permission refusée pour le port {port}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}[!] Essayez un port > 1024 ou exécutez avec les droits administrateur{Colors.ENDC}")
     except OSError as e:
-        print(f"{Colors.RED}❌ Erreur réseau: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Erreur réseau : {e}{Colors.ENDC}")
     except Exception as e:
-        print(f"{Colors.RED}❌ Erreur fatale du serveur: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Erreur fatale du serveur : {e}{Colors.ENDC}")
     finally:
         server.close()
-        print(f"{Colors.CYAN}👋 Serveur arrêté{Colors.ENDC}")
+        print(f"{Colors.CYAN}[*] Serveur arrêté{Colors.ENDC}")
 
 if __name__ == "__main__":
     try:
         run_server()
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}👋 Arrêt demandé par l'utilisateur{Colors.ENDC}")
+        print(f"\n{Colors.YELLOW}[*] Arrêt demandé par l'utilisateur{Colors.ENDC}")

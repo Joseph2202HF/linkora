@@ -52,13 +52,13 @@ class FileSender:
     def validate_file(self):
         """Vérifie que le fichier existe et est lisible"""
         if not self.filename.exists():
-            raise FileNotFoundError(f"Fichier introuvable: {self.filename}")
+            raise FileNotFoundError(f"Fichier introuvable : {self.filename}")
         if not self.filename.is_file():
-            raise ValueError(f"Ce n'est pas un fichier: {self.filename}")
+            raise ValueError(f"Type incorrect : {self.filename}")
         
         self.file_size = self.filename.stat().st_size
         if self.file_size == 0:
-            raise ValueError("Le fichier est vide")
+            raise ValueError("Fichier vide")
         
         return True
     
@@ -71,7 +71,7 @@ class FileSender:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, BUFFER_SIZE)
             sock.settimeout(30)
             
-            print(f"{Colors.CYAN}🔗 Connexion à {self.host}:{self.port}...{Colors.ENDC}")
+            print(f"{Colors.CYAN}[*] Connexion à {self.host}:{self.port}...{Colors.ENDC}")
             
             try:
                 sock.connect((self.host, self.port))
@@ -80,7 +80,7 @@ class FileSender:
             except ConnectionRefusedError:
                 raise ConnectionError(f"Connexion refusée par {self.host}:{self.port}")
             
-            print(f"{Colors.GREEN}✅ Connecté au serveur !{Colors.ENDC}")
+            print(f"{Colors.GREEN}[+] Connecté au serveur{Colors.ENDC}")
             
             self._send_metadata(sock)
             self._send_file_content(sock)
@@ -94,8 +94,8 @@ class FileSender:
         sock.sendall(filename_bytes)
         sock.sendall(struct.pack('!Q', self.file_size))
         
-        print(f"{Colors.BOLD}📄 Fichier: {self.filename.name}{Colors.ENDC}")
-        print(f"{Colors.BOLD}📏 Taille: {self.file_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
+        print(f"{Colors.BOLD}Fichier : {self.filename.name}{Colors.ENDC}")
+        print(f"{Colors.BOLD}Taille  : {self.file_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
     
     def _send_file_content(self, sock):
         """Envoie le contenu du fichier avec une barre de progression moderne"""
@@ -103,7 +103,7 @@ class FileSender:
         buffer_size = BUFFER_SIZE
         
         print(f"\n{Colors.CYAN}╭─────────────────────────────────────────────────────────╮{Colors.ENDC}")
-        print(f"{Colors.CYAN}│{Colors.ENDC} {Colors.BOLD}ENVOI DU FICHIER{Colors.ENDC}".ljust(68) + f"{Colors.CYAN}│{Colors.ENDC}")
+        print(f"{Colors.CYAN}│{Colors.ENDC} {Colors.BOLD}TRANSFERT SORTANT{Colors.ENDC}".ljust(68) + f"{Colors.CYAN}│{Colors.ENDC}")
         print(f"{Colors.CYAN}├─────────────────────────────────────────────────────────┤{Colors.ENDC}")
         
         with open(self.filename, 'rb', buffering=buffer_size) as f:
@@ -162,7 +162,7 @@ class FileSender:
         total_mb = total / 1024 / 1024
         
         # Ligne de progression moderne
-        progress_line = f"\r{Colors.CYAN}│{Colors.ENDC} 📤 [{bar}] {percent:5.1f}% | {Colors.GREEN}{speed:6.2f} Mo/s{Colors.ENDC} | {current_mb:7.1f}/{total_mb:7.1f} Mo | ⏱️ {remaining_str:10s}"
+        progress_line = f"\r{Colors.CYAN}│{Colors.ENDC} > [{bar}] {percent:5.1f}% | {Colors.GREEN}{speed:6.2f} Mo/s{Colors.ENDC} | {current_mb:7.1f}/{total_mb:7.1f} Mo | ETA {remaining_str:10s}"
         
         # Efface le reste de la ligne et affiche
         sys.stdout.write('\033[K' + progress_line)
@@ -173,9 +173,9 @@ class FileSender:
         elapsed = time.time() - self.start_time
         avg_speed = self.file_size / elapsed / 1024 / 1024 if elapsed > 0 else 0
         
-        print(f"\n{Colors.GREEN}✅ Transfert terminé en {elapsed:.2f}s{Colors.ENDC}")
-        print(f"{Colors.CYAN}🚀 Vitesse moyenne: {avg_speed:.2f} Mo/s{Colors.ENDC}")
-        print(f"{Colors.CYAN}💾 Données envoyées: {self.file_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
+        print(f"\n{Colors.GREEN}Transfert terminé en {elapsed:.2f}s{Colors.ENDC}")
+        print(f"{Colors.CYAN}Vitesse moyenne : {avg_speed:.2f} Mo/s{Colors.ENDC}")
+        print(f"{Colors.CYAN}Données envoyées : {self.file_size / 1024 / 1024:.2f} Mo{Colors.ENDC}")
 
 class ServerDiscovery:
     """Gestionnaire de découverte de serveurs Linkora"""
@@ -187,7 +187,7 @@ class ServerDiscovery:
     
     def discover(self):
         """Découvre les serveurs Linkora sur le réseau"""
-        print(f"{Colors.CYAN}🔍 Recherche de serveurs Linkora...{Colors.ENDC}")
+        print(f"{Colors.CYAN}[*] Recherche de serveurs Linkora...{Colors.ENDC}")
         
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -197,10 +197,10 @@ class ServerDiscovery:
             try:
                 sock.sendto(DISCOVERY_MESSAGE, ("255.255.255.255", self.discovery_port))
             except PermissionError:
-                print(f"{Colors.YELLOW}⚠️  Permission refusée pour le broadcast{Colors.ENDC}")
+                print(f"{Colors.YELLOW}[!] Permission refusée pour le broadcast{Colors.ENDC}")
                 return []
             except Exception as e:
-                print(f"{Colors.YELLOW}⚠️  Erreur d'envoi broadcast: {e}{Colors.ENDC}")
+                print(f"{Colors.YELLOW}[!] Erreur d'envoi broadcast : {e}{Colors.ENDC}")
                 return []
             
             start_time = time.time()
@@ -214,7 +214,7 @@ class ServerDiscovery:
                         server_info = self._parse_response(payload, addr)
                         if server_info:
                             self.discovered_servers.append(server_info)
-                            print(f"{Colors.GREEN}✨ Serveur trouvé: {server_info['host']}:{server_info['port']}{Colors.ENDC}")
+                            print(f"{Colors.GREEN}[+] Serveur détecté : {server_info['host']}:{server_info['port']}{Colors.ENDC}")
                             
                 except socket.timeout:
                     continue
@@ -268,29 +268,28 @@ def run_client(filename=None, no_discover=False):
     """Point d'entrée principal du client"""
     
     print(f"\n{Colors.BOLD}{Colors.GREEN}╔══════════════════════════════════════════════════════════╗{Colors.ENDC}")
-    print(f"{Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}           📤 CLIENT LINKORA                               {Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}")
+    print(f"{Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}                    CLIENT LINKORA                         {Colors.BOLD}{Colors.GREEN}║{Colors.ENDC}")
     print(f"{Colors.BOLD}{Colors.GREEN}╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
     
     if no_discover:
-        print(f"{Colors.YELLOW}🔍 Mode découverte désactivé{Colors.ENDC}")
-        print(f"{Colors.CYAN}📝 Configuration manuelle requise{Colors.ENDC}")
+        print(f"{Colors.YELLOW}[!] Mode découverte désactivé{Colors.ENDC}")
         
         if not filename:
-            filename = input(f"{Colors.CYAN}📁 Chemin du fichier à envoyer: {Colors.ENDC}").strip()
+            filename = input(f"{Colors.CYAN}Chemin du fichier à envoyer : {Colors.ENDC}").strip()
             if not filename:
-                print(f"{Colors.RED}❌ Aucun fichier spécifié{Colors.ENDC}")
+                print(f"{Colors.RED}[✗] Aucun fichier spécifié{Colors.ENDC}")
                 return
         
-        host = input(f"{Colors.CYAN}🌐 Adresse IP du serveur: {Colors.ENDC}").strip()
+        host = input(f"{Colors.CYAN}Adresse IP du serveur : {Colors.ENDC}").strip()
         if not host:
-            print(f"{Colors.RED}❌ Adresse IP requise{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] Adresse IP requise{Colors.ENDC}")
             return
             
         try:
-            port_input = input(f"{Colors.CYAN}🔌 Port du serveur [{PORT}]: {Colors.ENDC}").strip()
+            port_input = input(f"{Colors.CYAN}Port du serveur [{PORT}] : {Colors.ENDC}").strip()
             port = int(port_input) if port_input else PORT
         except ValueError:
-            print(f"{Colors.YELLOW}⚠️  Port invalide, utilisation du port {PORT}{Colors.ENDC}")
+            print(f"{Colors.YELLOW}[!] Port invalide, utilisation de {PORT}{Colors.ENDC}")
             port = PORT
         
         try:
@@ -298,64 +297,61 @@ def run_client(filename=None, no_discover=False):
             sender.validate_file()
             sender.send()
         except FileNotFoundError as e:
-            print(f"{Colors.RED}❌ {e}{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] {e}{Colors.ENDC}")
         except ValueError as e:
-            print(f"{Colors.RED}❌ {e}{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] {e}{Colors.ENDC}")
         except ConnectionError as e:
-            print(f"{Colors.RED}❌ {e}{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] {e}{Colors.ENDC}")
         except Exception as e:
-            print(f"{Colors.RED}❌ Erreur lors du transfert: {e}{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] Erreur lors du transfert : {e}{Colors.ENDC}")
         return
     
     if filename:
         filepath = Path(filename)
         if not filepath.exists():
-            print(f"{Colors.RED}❌ Fichier introuvable: {filename}{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] Fichier introuvable : {filename}{Colors.ENDC}")
             return
         if not filepath.is_file():
-            print(f"{Colors.RED}❌ Ce n'est pas un fichier: {filename}{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] Ce n'est pas un fichier : {filename}{Colors.ENDC}")
             return
     
     discovery = ServerDiscovery()
     servers = discovery.discover()
     
     if not servers:
-        print(f"\n{Colors.RED}❌ Aucun serveur Linkora trouvé sur le réseau{Colors.ENDC}")
-        print(f"{Colors.YELLOW}💡 Vérifiez que:{Colors.ENDC}")
-        print(f"   1. Un serveur est en cours d'exécution")
-        print(f"   2. Vous êtes sur le même réseau")
-        print(f"   3. Le port UDP {DISCOVERY_PORT} n'est pas bloqué")
-        print(f"\n{Colors.CYAN}📝 Ou utilisez --no-discover pour vous connecter manuellement{Colors.ENDC}")
+        print(f"\n{Colors.RED}[✗] Aucun serveur Linkora détecté{Colors.ENDC}")
+        print(f"{Colors.YELLOW}[!] Vérifiez que le serveur est actif sur le même réseau{Colors.ENDC}")
+        print(f"{Colors.CYAN}[*] Utilisez --no-discover pour une connexion manuelle{Colors.ENDC}")
         return
     
     if len(servers) > 1:
-        print(f"\n{Colors.CYAN}📡 {len(servers)} serveurs trouvés:{Colors.ENDC}")
+        print(f"\n{Colors.CYAN}[*] {len(servers)} serveurs détectés :{Colors.ENDC}")
         for i, server in enumerate(servers):
             print(f"   {i+1}. {server['host']}:{server['port']}")
         
         best = discovery.get_best_server()
         if best:
-            print(f"\n{Colors.GREEN}💡 Serveur recommandé: {best['host']}:{best['port']} (même sous-réseau){Colors.ENDC}")
+            print(f"\n{Colors.GREEN}[+] Serveur recommandé : {best['host']}:{best['port']} (même sous-réseau){Colors.ENDC}")
         
         try:
-            choice = input(f"\n{Colors.CYAN}🔢 Choisissez un serveur (numéro) ou Entrée pour le premier: {Colors.ENDC}").strip()
+            choice = input(f"\n{Colors.CYAN}Sélectionnez un serveur (numéro) ou Entrée pour le premier : {Colors.ENDC}").strip()
             if choice:
                 idx = int(choice) - 1
                 server = servers[idx]
             else:
                 server = best or servers[0]
         except (ValueError, IndexError):
-            print(f"{Colors.YELLOW}⚠️  Choix invalide, utilisation du serveur recommandé{Colors.ENDC}")
+            print(f"{Colors.YELLOW}[!] Choix invalide, utilisation du serveur recommandé{Colors.ENDC}")
             server = best or servers[0]
     else:
         server = servers[0]
     
-    print(f"\n{Colors.GREEN}🎯 Serveur sélectionné: {server['host']}:{server['port']}{Colors.ENDC}")
+    print(f"\n{Colors.GREEN}[+] Serveur sélectionné : {server['host']}:{server['port']}{Colors.ENDC}")
     
     if not filename:
-        filename = input(f"\n{Colors.CYAN}📁 Chemin du fichier à envoyer: {Colors.ENDC}").strip()
+        filename = input(f"\n{Colors.CYAN}Chemin du fichier à envoyer : {Colors.ENDC}").strip()
         if not filename:
-            print(f"{Colors.RED}❌ Aucun fichier spécifié{Colors.ENDC}")
+            print(f"{Colors.RED}[✗] Aucun fichier spécifié{Colors.ENDC}")
             return
     
     try:
@@ -364,19 +360,19 @@ def run_client(filename=None, no_discover=False):
         sender.send()
         
     except FileNotFoundError as e:
-        print(f"{Colors.RED}❌ {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] {e}{Colors.ENDC}")
     except ValueError as e:
-        print(f"{Colors.RED}❌ {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] {e}{Colors.ENDC}")
     except ConnectionRefusedError:
-        print(f"{Colors.RED}❌ Connexion refusée par {server['host']}:{server['port']}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Connexion refusée par {server['host']}:{server['port']}{Colors.ENDC}")
     except socket.timeout:
-        print(f"{Colors.RED}❌ Timeout lors de la connexion à {server['host']}:{server['port']}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Timeout lors de la connexion à {server['host']}:{server['port']}{Colors.ENDC}")
     except ConnectionError as e:
-        print(f"{Colors.RED}❌ {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] {e}{Colors.ENDC}")
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}⚠️  Transfert interrompu par l'utilisateur{Colors.ENDC}")
+        print(f"\n{Colors.YELLOW}[!] Transfert interrompu{Colors.ENDC}")
     except Exception as e:
-        print(f"{Colors.RED}❌ Erreur lors du transfert: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[✗] Erreur lors du transfert : {e}{Colors.ENDC}")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
